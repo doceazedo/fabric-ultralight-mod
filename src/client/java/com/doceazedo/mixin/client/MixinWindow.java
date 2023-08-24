@@ -31,7 +31,7 @@ public class MixinWindow {
 
 	@Inject(at = @At(value = "RETURN"), method = "updateFramebufferSize")
 	private void afterUpdateFrameBufferSize(CallbackInfo ci) {
-		if (MinecraftClient.IS_SYSTEM_MAC ) {
+		if (MinecraftClient.IS_SYSTEM_MAC) {
 			framebufferWidth /= 2;
 			framebufferHeight /= 2;
 		}
