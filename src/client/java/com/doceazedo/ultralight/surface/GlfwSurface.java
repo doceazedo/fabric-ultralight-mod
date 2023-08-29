@@ -94,10 +94,9 @@ public class GlfwSurface implements UltralightSurface {
     public IntRect dirtyBounds() {
         if (dirtyBounds != null) {
             return dirtyBounds;
-        } else {
-            // We don't want to return null into the native code
-            return new IntRect(0, 0, 0, 0);
         }
+        // We don't want to return null into the native code
+        return new IntRect(0, 0, 0, 0);
     }
 
     @Override

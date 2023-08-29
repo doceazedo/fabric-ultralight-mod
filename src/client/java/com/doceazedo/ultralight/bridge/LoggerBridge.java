@@ -22,17 +22,12 @@ public class LoggerBridge implements UltralightLogger {
      * @return the translated log level for Log4j
      */
     private Level transateLogLevel(UltralightLogLevel logLevel) {
-        switch (logLevel) {
-            // Map levels 1:1
-            case ERROR:
-                return Level.ERROR;
-            case WARNING:
-                return Level.WARN;
-            case INFO:
-                return Level.INFO;
-
-            default:
-                throw new RuntimeException("Unknown log level: " + logLevel);
-        }
+	    return switch (logLevel) {
+		    // Map levels 1:1
+		    case ERROR -> Level.ERROR;
+		    case WARNING -> Level.WARN;
+		    case INFO -> Level.INFO;
+		    default -> throw new RuntimeException("Unknown log level: " + logLevel);
+	    };
     }
 }

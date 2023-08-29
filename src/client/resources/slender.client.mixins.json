@@ -3,7 +3,7 @@
   "package": "com.doceazedo.mixin.client",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "ExampleClientMixin"
+    "MixinSimpleOption"
   ],
   "injectors": {
     "defaultRequire": 1
