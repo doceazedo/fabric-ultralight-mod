@@ -22,14 +22,14 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class WebController implements AutoCloseable {
-
+    public static final WebController INSTANCE = new WebController();
     private static final Logger LOGGER = LogManager.getLogger(WebController.class);
 
-    private final Set<WebWindow> windows;
-    private final UltralightJavaReborn ujr;
+    private Set<WebWindow> windows;
+    private UltralightJavaReborn ujr;
 
-    public WebController() {
-        this.windows = new HashSet<WebWindow>();
+    public void load() {
+        this.windows = new HashSet<>();
 
         // Load the platform and create the Ultralight Java Reborn instance
         PlatformEnvironment environment = PlatformEnvironment.load();
@@ -93,12 +93,20 @@ public class WebController implements AutoCloseable {
         UltralightRenderer.getOrCreate().render();
 
         for (WebWindow window : this.windows) {
-            window.renderToFramebuffer(drawContext, SlenderClient.INSTANCE.getMc().getWindow().getScaledWidth(), SlenderClient.INSTANCE.getMc().getWindow().getScaledHeight());
+            window.render(drawContext);
         }
+    }
+
+    public void closeWindow(WebWindow window) {
+        this.windows.remove(window);
     }
 
     @Override
     public void close() {
         terminate();
+    }
+
+    public UltralightJavaReborn getUltralight() {
+        return ujr;
     }
 }

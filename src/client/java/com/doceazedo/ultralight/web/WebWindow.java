@@ -1,6 +1,5 @@
 package com.doceazedo.ultralight.web;
 
-import com.doceazedo.Slender;
 import com.doceazedo.SlenderClient;
 import com.doceazedo.shaders.MinecraftShaders;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -12,9 +11,9 @@ import net.janrupf.ujr.api.event.UlScrollEventType;
 import com.doceazedo.ultralight.surface.GlfwSurface;
 import com.doceazedo.ultralight.web.listener.WebViewListener;
 import com.doceazedo.ultralight.web.listener.WebViewLoadListener;
-import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 
@@ -30,6 +29,9 @@ public class WebWindow {
     private double lastMouseY;
     private int lastWidth = -1;//use this instead of view.width, because this is technically faster
     private int lastHeight = -1;
+    private float xScale;
+    private float yScale;
+
 
     public WebWindow(Supplier<Integer> width, Supplier<Integer> height) {
         this.lastWidth = width.get();
@@ -42,6 +44,18 @@ public class WebWindow {
         this.view.setViewListener(new WebViewListener(this));
         this.view.setLoadListener(new WebViewLoadListener());
     }
+
+    /**
+     * Called by GLFW then the content scale (DPI ratio) changes.
+     *
+     * @param xScale The new x scale
+     * @param yScale The new y scale
+     */
+    public void windowContentScaleCallback(float xScale, float yScale) {
+        this.xScale = xScale;
+        this.yScale = yScale;
+    }
+
 
     public void resizeIfNeeded() {
         int width = this.width.get();
@@ -80,8 +94,8 @@ public class WebWindow {
     }
 
     public void onCursorPos(double x, double y) {
-        this.lastMouseX = x;
-        this.lastMouseY = y;
+        this.lastMouseX = x * xScale;
+        this.lastMouseY = y * yScale;
 
         // We need mouse buttons here in order for drag events to properly work
         UlMouseButton button = UlMouseButton.NONE;
@@ -100,22 +114,15 @@ public class WebWindow {
     public void onMouseButton(int button, int action, int mods) {
         UlMouseButton ulButton;
 
-        switch (button) {
-            case GLFW.GLFW_MOUSE_BUTTON_LEFT:
-                ulButton = UlMouseButton.LEFT;
-                break;
+	    switch (button) {
+		    case GLFW.GLFW_MOUSE_BUTTON_LEFT -> ulButton = UlMouseButton.LEFT;
+		    case GLFW.GLFW_MOUSE_BUTTON_RIGHT -> ulButton = UlMouseButton.RIGHT;
+		    case GLFW.GLFW_MOUSE_BUTTON_MIDDLE -> ulButton = UlMouseButton.MIDDLE;
+		    default -> {
+			    return;
+		    }
+	    }
 
-            case GLFW.GLFW_MOUSE_BUTTON_RIGHT:
-                ulButton = UlMouseButton.RIGHT;
-                break;
-
-            case GLFW.GLFW_MOUSE_BUTTON_MIDDLE:
-                ulButton = UlMouseButton.MIDDLE;
-                break;
-
-            default:
-                return;
-        }
 
         UltralightMouseEventBuilder builder;
 
@@ -126,8 +133,9 @@ public class WebWindow {
         } else {
             return;
         }
+       var event =  builder.x((int) this.lastMouseX).y((int) this.lastMouseY).build();
 
-        this.view.fireMouseEvent(builder.x((int) this.lastMouseX).y((int) this.lastMouseY).build());
+        this.view.fireMouseEvent(event);
     }
 
     public void onScroll(double x, double y) {
@@ -166,5 +174,9 @@ public class WebWindow {
 
     private boolean isMouseButtonDown(int button) {
         return GLFW.glfwGetMouseButton(SlenderClient.INSTANCE.getMc().getWindow().getHandle(), button) == GLFW.GLFW_PRESS;
+    }
+
+    public void render(@Nullable DrawContext context) {
+        renderToFramebuffer(context, SlenderClient.INSTANCE.getMc().getWindow().getScaledWidth(), SlenderClient.INSTANCE.getMc().getWindow().getScaledHeight());
     }
 }
