@@ -53,7 +53,7 @@ dependencies {
 	implementation("net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT")
 
 	// The native libraries, these are needed for runtime only (they contain no Java code)
-//	runtimeOnly("net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:mac-x64")
+	runtimeOnly("net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:mac-x64")
 	runtimeOnly("net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:win-x64")
 }
 
