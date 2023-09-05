@@ -1,6 +1,6 @@
-# Slender
+# fabric-ultralight-mod
 
-Next-gen all-in-one Minecraft client
+Ultralight implementation on a Fabric/Minecraft mod. Have fun.
 
 ## Requirements
 
